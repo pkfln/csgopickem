@@ -19,7 +19,8 @@ class config
     // Steam API Configuration
     public static $steam_key = ''; // Get your Steam-API Key here: https://steamcommunity.com/dev/apikey
     public static $valid_events = array(
-        9 // 2016 MLG Columbus Major CS:GO Championship (default event)
+        9   => 'MLG Columbus 2016 CS:GO Championship',
+        10  => 'ESL One Cologne 2016 CS:GO Championship'
     );
 
     // Site Configuration
@@ -29,7 +30,7 @@ class config
     public function __construct()
     {
         // Site Configuration
-        $this->site_pagetitle = 'Pick\'Em API Test';
+        $this->site_pagetitle = 'CSGO Pick\'Em';
         $this->site_description = '';
     }
 

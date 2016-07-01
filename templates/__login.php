@@ -19,17 +19,21 @@ global $PEA;
 if($PEA->steam->isLoggedIn())
     header('LOCATION: index.php?page=main');
 
-if(isset($_POST['submit'], $_POST['steamid64'], $_POST['authcode']))
-{
-    if(isset($PEA->steam->getPlayerSummaries($_POST['steamid64'])->steamid) && isset($PEA->steam->getTournamentPredictions($PEA->config->getValue('valid_events')[0], $_POST['steamid64'], $_POST['authcode'])[0]))
-    {
-        $_SESSION['steamID64'] = $_POST['steamid64'];
-        $_SESSION['steamGameAuthcode'] = $_POST['authcode'];
+if(isset($_POST['submit'], $_POST['steamid64'], $_POST['authcode'], $_POST['event'])) {
+    if ($PEA->steam->isValidEvent($PEA->steam->getEventIDByName($_POST['event']))) {
+        if (isset($PEA->steam->getPlayerSummaries($_POST['steamid64'])->steamid) && $PEA->steam->isValidAuthcode($PEA->steam->getEventIDByName($_POST['event']), $_POST['steamid64'], $_POST['authcode'])) {
+            $_SESSION['steamID64'] = $_POST['steamid64'];
+            $_SESSION['steamGameAuthcode'] = $_POST['authcode'];
+            $_SESSION['event'] = $PEA->steam->getEventIDByName($_POST['event']);
 
-        header('LOCATION: index.php?page=main');
+            header('LOCATION: index.php?page=main');
+        } else {
+            $error = '<script>$(document).ready(function(e) { $.toast({ heading: \'Error\', text: \'Invalid Steam ID64 and / or CS:GO Game Authentication Code. Make sure that your authentication code is for the selected tournament.\', showHideTransition: \'slide\', icon: \'error\', loader: false }) });</script>';
+        }
+    } else {
+        $error = '<script>$(document).ready(function(e) { $.toast({ heading: \'Error\', text: \'Invalid tournament selected.\', showHideTransition: \'slide\', icon: \'error\', loader: false }) });</script>';
+
     }
-    else
-        $error = '<script>$(document).ready(function(e) { $.toast({ heading: \'Error\', text: \'Invalid Steam ID64 and / or CS:GO Game Authentication Code.\', showHideTransition: \'slide\', icon: \'error\', loader: false }) });</script>';
 }
 
 ?>
@@ -63,6 +67,7 @@ if(isset($_POST['submit'], $_POST['steamid64'], $_POST['authcode']))
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.teal-red.min.css">
     <link rel="stylesheet" href="assets/style/login.css">
     <link rel="stylesheet" href="assets/style/jquery.toast.css">
+    <link rel="stylesheet" href="assets/style/material-select.css">
 </head>
 <body>
 <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
@@ -81,8 +86,8 @@ if(isset($_POST['submit'], $_POST['steamid64'], $_POST['authcode']))
                 <h5>Login with your Steam Game Authentication Code</h5>
                 <br /><br />
                 <p>To choose your Pick'Em Challenge picks, just login with your Steam ID64 (you can get it
-                from <a href="https://steamid.io/">here</a>) and with your CS:GO Game Authentication Code (which you can get
-                from <a href="https://help.steampowered.com/en/wizard/HelpWithGameIssue/?appid=730&issueid=128">here</a>).</p>
+                from <a href="https://steamid.io/" target="_blank">here</a>) and with your CS:GO Game Authentication Code (which you can get
+                from <a href="https://help.steampowered.com/en/wizard/HelpWithGameIssue/?appid=730&issueid=128" target="blank">here</a>).</p>
                 <br />
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width: 100%;">
                     <input class="mdl-textfield__input" type="number" id="steamid64" name="steamid64">
@@ -92,6 +97,9 @@ if(isset($_POST['submit'], $_POST['steamid64'], $_POST['authcode']))
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width: 100%;">
                     <input class="mdl-textfield__input" type="text" pattern="[A-Z0-9]{4}-[A-Z0-9]{5}-[A-Z0-9]{4}" id="authcode" name="authcode">
                     <label class="mdl-textfield__label" for="authcode">CS:GO Game Authentication Code</label>
+                </div>
+                <br />
+                <div id="eventChooser" class="mdl-select" style="width: 100%;">
                 </div>
                 <br /><br />
                 <input type="submit" name="submit" value="Login" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" style="width: 100%;" />
@@ -110,6 +118,10 @@ if(isset($_POST['submit'], $_POST['steamid64'], $_POST['authcode']))
 <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
 <script src="assets/script/jquery-1.12.4.min.js"></script>
 <script src="assets/script/jquery.toast.js"></script>
+<script src="assets/script/material-select.js"></script>
+<script>
+    materialSelect('eventChooser', 'event', ['<?php echo implode('\', \'', $PEA->config->getValue('valid_events')) ?>'], 'Choose a tournament');
+</script>
 <?php if(isset($error)) echo $error; ?>
 </body>
 </html>

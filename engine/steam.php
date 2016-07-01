@@ -18,26 +18,45 @@ class steam
 {
     public function isLoggedIn()
     {
-        return isset($_SESSION['steamID64'], $_SESSION['steamGameAuthcode']) ? true : false;
+        return isset($_SESSION['steamID64'], $_SESSION['steamGameAuthcode'], $_SESSION['event']) ? true : false;
+    }
+
+    public function isValidEvent($eventID)
+    {
+        return @array_key_exists($eventID, config::getValue('valid_events'));
+    }
+
+    public function isValidAuthcode($eventID, $steamID64, $steamGameAuthcode)
+    {
+        $response = @file_get_contents('https://api.steampowered.com/ICSGOTournaments_730/GetTournamentPredictions/v1?key=' . config::getValue('steam_key') . '&event=' . $eventID . '&steamid=' . $steamID64 . '&steamidkey=' . $steamGameAuthcode);
+        $json = json_decode($response);
+        $jsonNode = @$json->result;
+
+        return isset($jsonNode) ? true : false;
+    }
+
+    public function getEventIDByName($eventName)
+    {
+        return array_search($eventName, config::getValue('valid_events'));
     }
 
     public function getPlayerSummaries($steamID64)
     {
-        $response = file_get_contents('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' . config::getValue('steam_key') . '&steamids=' . $steamID64);
+        $response = @file_get_contents('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' . config::getValue('steam_key') . '&steamids=' . $steamID64);
         $json = json_decode($response);
         return @$json->response->players[0];
     }
 
     public function getTournamentLayout($eventID)
     {
-        $response = file_get_contents('https://api.steampowered.com/ICSGOTournaments_730/GetTournamentLayout/v1?key=' . config::getValue('steam_key') . '&event=' . $eventID);
+        $response = @file_get_contents('https://api.steampowered.com/ICSGOTournaments_730/GetTournamentLayout/v1?key=' . config::getValue('steam_key') . '&event=' . $eventID);
         $json = json_decode($response);
         return @$json->result;
     }
 
     public function getTournamentPredictions($eventID, $steamID64, $steamGameAuthcode)
     {
-        $response = file_get_contents('https://api.steampowered.com/ICSGOTournaments_730/GetTournamentPredictions/v1?key=' . config::getValue('steam_key') . '&event=' . $eventID . '&steamid=' . $steamID64 . '&steamidkey=' . $steamGameAuthcode);
+        $response = @file_get_contents('https://api.steampowered.com/ICSGOTournaments_730/GetTournamentPredictions/v1?key=' . config::getValue('steam_key') . '&event=' . $eventID . '&steamid=' . $steamID64 . '&steamidkey=' . $steamGameAuthcode);
         $json = json_decode($response);
         return @$json->result->picks;
     }

@@ -19,13 +19,10 @@ global $PEA;
 if(!$PEA->steam->isLoggedIn())
     header('LOCATION: index.php?page=login');
 
-if(!isset($_GET['eventID']))
-    header('LOCATION: index.php?page=main&eventID=' . $PEA->config->getValue('valid_events')[0]);
+if(!$PEA->steam->isValidEvent($_SESSION['event']))
+    header('LOCATION: index.php?page=logout');
 
-if(!in_array($_GET['eventID'], $PEA->config->getValue('valid_events')))
-    header('LOCATION: index.php?page=main&eventID=' . $PEA->config->getValue('valid_events')[0]);
-
-$cachedTournamentLayout = $PEA->steam->getTournamentLayout($_GET['eventID']);
+$cachedTournamentLayout = $PEA->steam->getTournamentLayout($_SESSION['event']);
 $cachedPlayerSummaries = $PEA->steam->getPlayerSummaries($_SESSION['steamID64']);
 
 ?>
@@ -92,15 +89,8 @@ $cachedPlayerSummaries = $PEA->steam->getPlayerSummaries($_SESSION['steamID64'])
             </div>
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-            <?php
-
-            foreach($PEA->config->getValue('valid_events') as $eventID)
-            {
-                $cachedTempTournamentLayout = $PEA->steam->getTournamentLayout($eventID);
-
-            ?>
-            <a class="mdl-navigation__link" href="index.php?page=main&eventID=<?php echo $eventID; ?>"><?php echo $cachedTempTournamentLayout->name; ?></a>
-            <?php } ?>
+            <a class="mdl-navigation__link" href="index.php?page=main">Team Pick'Em</a>
+            <a class="mdl-navigation__link" href="index.php?page=fantasy">Fantasy Team</a>
             <div class="mdl-layout-spacer"></div>
             <a class="mdl-navigation__link" href="index.php?page=logout"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">&#xE879;</i>Logout</a>
         </nav>
@@ -148,7 +138,7 @@ $cachedPlayerSummaries = $PEA->steam->getPlayerSummaries($_SESSION['steamID64'])
                                 <li>
                                     <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
                                         <input type="radio" id="option-1" class="mdl-radio__button" name="options" value="<?php echo $team->pickid ?>1">
-                                        <span class="mdl-radio__label"><?php echo $PEA->steam->getTeamNameById($_GET['eventID'], $team->pickid); ?></span>
+                                        <span class="mdl-radio__label"><?php echo $PEA->steam->getTeamNameById($_SESSION['event'], $team->pickid); ?></span>
                                     </label>
                                 </li>
                                 <?php } ?>
