@@ -66,12 +66,18 @@ $cachedPlayerSummaries = $PEA->steam->getPlayerSummaries($_SESSION['steamID64'])
             z-index: 900;
         }
     </style>
+
+    <script src='assets/script/nprogress.js'></script>
+    <link rel='stylesheet' href='assets/style/nprogress.css'/>
 </head>
-<body>
+<body onload="NProgress.done();">
+<script>
+    NProgress.start();
+</script>
 <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
     <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
-            <span class="mdl-layout-title"><?php echo $cachedTournamentLayout->name; ?></span>
+            <span class="mdl-layout-title"><?php echo $cachedTournamentLayout->name; ?> - Team Pick'Em</span>
             <div class="mdl-layout-spacer"></div>
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
                 <i class="material-icons">more_vert</i>

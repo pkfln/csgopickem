@@ -68,8 +68,14 @@ if(isset($_POST['submit'], $_POST['steamid64'], $_POST['authcode'], $_POST['even
     <link rel="stylesheet" href="assets/style/login.css">
     <link rel="stylesheet" href="assets/style/jquery.toast.css">
     <link rel="stylesheet" href="assets/style/material-select.css">
+
+    <script src='assets/script/nprogress.js'></script>
+    <link rel='stylesheet' href='assets/style/nprogress.css'/>
 </head>
-<body>
+<body onload="NProgress.done();">
+<script>
+    NProgress.start();
+</script>
 <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
     <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
         <div class="mdl-layout__header-row">
