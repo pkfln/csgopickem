@@ -1,4 +1,4 @@
 # CS:GO Pick'Em API Test
-Demo: https://pickem.peek.ml
+Demo: https://pickem.pkfln.io
 
-More coming soon...
+More coming ^(never) soon...
